@@ -1,0 +1,74 @@
+"""
+Hello this is the code file for the Python ICA 2. Our project aims to create a password file system. 
+
+String: Passcode, data handling
+
+"""
+import random
+
+def to_string(n):
+    #this function converts integers to string, with the correct formatting for the key
+    #if n is less than 10, it will be 0n. If n is more than 10, it will simply show up as n.
+    if (n < 10 and n >= 0):
+        return ("0" + str(n))
+    else:
+       return str(n)
+
+def create_key():
+    #this function creates a simple ceasar cipher key for the file. it generates 6 random digits to function as a key, which would aid in the cipher.
+    key1 = random.randint(0,25)
+    key2 = random.randint(0,25)
+    key3 = random.randint(0,25)
+    finalkey = to_string(key1) + to_string(key2) + to_string(key3)
+    print(finalkey)
+    return str(finalkey)
+
+def encrypt(string, key):
+    #this function encrypts a given string and a key. it is not a secure way of decrypting the code, which can theoretically be hacked in less than a day.
+    #the given key is made into 3 different substrings. 
+    key = str(key)
+    key1 = int(key[:2])
+    key1 = 0 - key1
+    key2 = int(key[2:4])
+    key2 = 0 - key2
+    key3 = int(key[4:])
+    key3 = 0 - key3
+    result = ""
+    #depending on the position of the character, the letter will get moved up and down certain amount. 
+    for i in range(len(string)):
+        char = string[i]
+        
+        if (i % 2 == 0):
+            result += chr(ord(char) + int(key1))
+        elif(i % 3 == 0):
+            result += chr(ord(char) + int(key2))
+        else:
+            result += chr(ord(char) + int(key3))
+
+    return result
+
+def decrypt(string, key):
+    #this function decrypts a given string, given the key. it is basically the reverse of the encrypt function
+    key = str(key)
+    key1 = int(key[:2])
+    key2 = int(key[2:4])
+    key3 = int(key[4:])
+    result = ""
+    for i in range(len(string)):
+        char = string[i]
+       
+        if (i % 2 == 0):
+            result += chr(ord(char) + int(key1))
+        elif(i % 3 == 0):
+            result += chr(ord(char) + int(key2))
+        else:
+            result += chr(ord(char) + int(key3))
+    return result
+
+def createfile(filename):
+    #this function creates a file
+    temp = str(filename) + ".txt"
+    filename = open(temp, "x")
+    key = createkey()
+    temp = str(filename) + str(key)
+    
