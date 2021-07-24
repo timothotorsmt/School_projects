@@ -5,6 +5,7 @@ String: Passcode, data handling
 
 """
 import random
+import pickle
 
 def to_string(n):
     #this function converts integers to string, with the correct formatting for the key
@@ -20,7 +21,6 @@ def create_key():
     key2 = random.randint(0,25)
     key3 = random.randint(0,25)
     finalkey = to_string(key1) + to_string(key2) + to_string(key3)
-    print(finalkey)
     return str(finalkey)
 
 def encrypt(string, key):
@@ -65,10 +65,59 @@ def decrypt(string, key):
             result += chr(ord(char) + int(key3))
     return result
 
-def createfile(filename):
-    #this function creates a file
-    temp = str(filename) + ".txt"
-    filename = open(temp, "x")
-    key = createkey()
-    temp = str(filename) + str(key)
+
+#main loop
+is_done = False
+password_storage = {}
+while (is_done != True):
+    filepass = False;
+    while (True):
+        user_input_filename = input("Enter a file name: ")
+        temp = str(user_input_filename) + ".txt"
+        if user_input_filename not in password_storage:
+            print("File not found. Make new file?")
+            temp_user_input = input("supposed to be buttons but Y/N: ")
+            temp_user_input = temp_user_input.upper()
+            if temp_user_input == "Y":
+                password = input("Please enter a password: ")
+                temp_key = create_key()
+                user_dict = {"password" : password, "key": temp_key}
+                password_storage[user_input_filename] = user_dict
+                f = open(temp, "x")
+                continue
+            elif temp_user_input == "N":
+                continue
+        elif user_input_filename in password_storage:
+            file_dict = password_storage.get(user_input_filename)
+            file_key = file_dict.get("key")
+            file_password = file_dict.get("password")
+            while (True):
+                temp_user_input = input("Enter password: ")
+                strikes = 0
+                if str(temp_user_input) == file_password:
+                    temp_user_input = input("what do u want to do? 1/2/3")
+                    if temp_user_input == "1":
+                        f = open(temp, "r")
+                        temp_line = f.read()
+                        temp_line = decrypt(temp_line, file_key)
+                        print(temp_line)
+                    elif temp_user_input == "2":
+                        f = open(temp, "w")
+                        temp_user_input = input("Write here: ")
+                        temp_user_input = encrypt(temp_user_input, file_key)
+                        f.write(temp_user_input)
+                        f.close()
+                    elif temp_user_input == "3":
+                        f = open(temp, "a")
+                        temp_user_input = input("Write here: ")
+                        temp_user_input = encrypt(temp_user_input, file_key)
+                        f.append(temp_user_input)
+                        f.close()
+                else:
+                    strikes += 1
+                    if strikes == 3:
+                        quit
+        password_file = open("password_file", 'w')
+        password_file.write(str(password_storage))
+        password_file.close()
     
