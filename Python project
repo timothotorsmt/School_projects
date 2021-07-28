@@ -59,19 +59,30 @@ def decrypt(string, key):
             result += chr(ord(char) + int(key3))
     return result
 
+def clear():
+    # for windows
+    if os.name == 'nt':
+        _ = os.system('cls')
+  
+    # for mac and linux(here, os.name is 'posix')
+    else:
+        _ = os.system('clear')
+
 
 #main
 
-if os.path.exists("./dictionary_file.txt") == False:
-    f = open("dictionary_file", "x")
+password_storage = {}
+if os.path.exists("demofile.txt") == False:
+    f = open("dictionary_file.txt", "w")
     f.close()
-f = open("dictionary_file", "r")
-dictionary_string = f.read()
-dictionary_temp = dictionary_string.decrypt()
-password_storage = eval(dictionary_temp)
+f = open("dictionary_file.txt", "r")
+if(f.read() != ""):
+    dictionary_string = f.read()
+    dictionary_temp = decrypt(dictionary_string, 111111)
+    password_storage = eval(dictionary_temp)
 fail_state = True
 while (fail_state == True):
-    system('cls')
+    clear()
     user_input_filename = input("Enter a filename: ")
     if user_input_filename not in password_storage:
         temp_str = input("File not found. Make new file? ")
@@ -81,6 +92,8 @@ while (fail_state == True):
             file_key = create_key();
             file_dict = {"password" : file_password, "key" : create_key}
             password_storage[user_input_filename] = file_dict
+            temp_str = user_input_filename + ".txt"
+            file = (temp_str, "x")
             print("File successfully created. ")
             continue
         elif temp_str == "N":
@@ -88,15 +101,18 @@ while (fail_state == True):
     else:
         user_input_password = input("Enter a password: ")
         user_wrong_count = 0;
-        if dictionary[user_input_filename]["password"] != user_input_password:
+        if password_storage[user_input_filename]["password"] != user_input_password:
             user_wrong_count += 1;
             if user_wrong_count == 3:
                 quit()
-        elif dictionary[user_input_filename]["password"] == user_input_password:
+        elif password_storage[user_input_filename]["password"] == user_input_password:
             fail_state = False;
 
 #in editing mode
-system('cls')
+clear()
 f = (user_input_filename, "r");
-print(f.read())
-user_input = input("\n\nWhat do you want to do today? ")
+for x in f:
+  print(x)
+user_input = input("\n\nWhat do you want to do today? w/d")
+user_input = user_input.upper();
+if (user_input == "W"):
