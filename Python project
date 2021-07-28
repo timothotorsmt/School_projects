@@ -1,11 +1,5 @@
-"""
-Hello this is the code file for the Python ICA 2. Our project aims to create a password file system. 
-
-String: Passcode, data handling
-
-"""
 import random
-import pickle
+import os
 
 def to_string(n):
     #this function converts integers to string, with the correct formatting for the key
@@ -66,58 +60,43 @@ def decrypt(string, key):
     return result
 
 
-#main loop
-is_done = False
-password_storage = {}
-while (is_done != True):
-    filepass = False;
-    while (True):
-        user_input_filename = input("Enter a file name: ")
-        temp = str(user_input_filename) + ".txt"
-        if user_input_filename not in password_storage:
-            print("File not found. Make new file?")
-            temp_user_input = input("supposed to be buttons but Y/N: ")
-            temp_user_input = temp_user_input.upper()
-            if temp_user_input == "Y":
-                password = input("Please enter a password: ")
-                temp_key = create_key()
-                user_dict = {"password" : password, "key": temp_key}
-                password_storage[user_input_filename] = user_dict
-                f = open(temp, "x")
-                continue
-            elif temp_user_input == "N":
-                continue
-        elif user_input_filename in password_storage:
-            file_dict = password_storage.get(user_input_filename)
-            file_key = file_dict.get("key")
-            file_password = file_dict.get("password")
-            while (True):
-                temp_user_input = input("Enter password: ")
-                strikes = 0
-                if str(temp_user_input) == file_password:
-                    temp_user_input = input("what do u want to do? 1/2/3")
-                    if temp_user_input == "1":
-                        f = open(temp, "r")
-                        temp_line = f.read()
-                        temp_line = decrypt(temp_line, file_key)
-                        print(temp_line)
-                    elif temp_user_input == "2":
-                        f = open(temp, "w")
-                        temp_user_input = input("Write here: ")
-                        temp_user_input = encrypt(temp_user_input, file_key)
-                        f.write(temp_user_input)
-                        f.close()
-                    elif temp_user_input == "3":
-                        f = open(temp, "a")
-                        temp_user_input = input("Write here: ")
-                        temp_user_input = encrypt(temp_user_input, file_key)
-                        f.append(temp_user_input)
-                        f.close()
-                else:
-                    strikes += 1
-                    if strikes == 3:
-                        quit
-        password_file = open("password_file", 'w')
-        password_file.write(str(password_storage))
-        password_file.close()
-    
+#main
+
+if os.path.exists("./dictionary_file.txt") == False:
+    f = open("dictionary_file", "x")
+    f.close()
+f = open("dictionary_file", "r")
+dictionary_string = f.read()
+dictionary_temp = dictionary_string.decrypt()
+password_storage = eval(dictionary_temp)
+fail_state = True
+while (fail_state == True):
+    system('cls')
+    user_input_filename = input("Enter a filename: ")
+    if user_input_filename not in password_storage:
+        temp_str = input("File not found. Make new file? ")
+        temp_str = temp_str.upper()
+        if temp_str == "Y":
+            file_password = input("Enter a user password: ")
+            file_key = create_key();
+            file_dict = {"password" : file_password, "key" : create_key}
+            password_storage[user_input_filename] = file_dict
+            print("File successfully created. ")
+            continue
+        elif temp_str == "N":
+            continue
+    else:
+        user_input_password = input("Enter a password: ")
+        user_wrong_count = 0;
+        if dictionary[user_input_filename]["password"] != user_input_password:
+            user_wrong_count += 1;
+            if user_wrong_count == 3:
+                quit()
+        elif dictionary[user_input_filename]["password"] == user_input_password:
+            fail_state = False;
+
+#in editing mode
+system('cls')
+f = (user_input_filename, "r");
+print(f.read())
+user_input = input("\n\nWhat do you want to do today? ")
