@@ -17,10 +17,10 @@ def create_key():
     finalkey = to_string(key1) + to_string(key2) + to_string(key3)
     return str(finalkey)
 
-def encrypt(string, key):
+def encrypt(string, keys):
     #this function encrypts a given string and a key. it is not a secure way of decrypting the code, which can theoretically be hacked in less than a day.
     #the given key is made into 3 different substrings. 
-    key = str(key)
+    key = str(keys)
     key1 = int(key[:2])
     key1 = 0 - key1
     key2 = int(key[2:4])
@@ -38,12 +38,13 @@ def encrypt(string, key):
             result += chr(ord(char) + int(key2))
         else:
             result += chr(ord(char) + int(key3))
-
     return result
 
-def decrypt(string, key):
+def decrypt(string, keys):
     #this function decrypts a given string, given the key. it is basically the reverse of the encrypt function
-    key = str(key)
+    if string == "":
+        pass;
+    key = str(keys)
     key1 = int(key[:2])
     key2 = int(key[2:4])
     key3 = int(key[4:])
@@ -51,6 +52,7 @@ def decrypt(string, key):
     for i in range(len(string)):
         char = string[i]
        
+        #randomise based on position
         if (i % 2 == 0):
             result += chr(ord(char) + int(key1))
         elif(i % 3 == 0):
@@ -59,41 +61,58 @@ def decrypt(string, key):
             result += chr(ord(char) + int(key3))
     return result
 
+def save_dictionary_to_file(dict):
+    #this function saves the dictionary to a file 
+    #rewrites the entire file
+    f = open("dictionary_file.txt", "w")
+    f.write(str(dict))
+    f.close
+
+def load_dictionary_from_file():
+    #this function will load the dictionary from a file
+    #if the file does not exist, make the file, if not extract the string and evaluate it
+    if os.path.exists("dictionary_file.txt") == False:
+        f = open("dictionary_file.txt", "x")
+        f.write("{}")
+        data=f.read()
+        f.close()
+        return eval(data)
+        pass;
+    else:
+        f = open('dictionary_file.txt','r')
+        data=f.read()
+        f.close()
+        return eval(data)
+        pass;
+
 def clear():
+    #this function helps clear the screen (it doesnt work lol)
     # for windows
     if os.name == 'nt':
         _ = os.system('cls')
   
-    # for mac and linux(here, os.name is 'posix')
+    # for mac and linux(here, os.name is 'posix'
     else:
         _ = os.system('clear')
 
-
 #main
-
-password_storage = {}
-if os.path.exists("demofile.txt") == False:
-    f = open("dictionary_file.txt", "w")
-    f.close()
-f = open("dictionary_file.txt", "r")
-if(f.read() != ""):
-    dictionary_string = f.read()
-    dictionary_temp = decrypt(dictionary_string, 111111)
-    password_storage = eval(dictionary_temp)
+#password_storage is the main storage dictionary
+password_storage = load_dictionary_from_file()
 fail_state = True
 while (fail_state == True):
     clear()
     user_input_filename = input("Enter a filename: ")
+    user_input_filename = user_input_filename + ".txt"
     if user_input_filename not in password_storage:
         temp_str = input("File not found. Make new file? ")
         temp_str = temp_str.upper()
         if temp_str == "Y":
             file_password = input("Enter a user password: ")
             file_key = create_key();
-            file_dict = {"password" : file_password, "key" : create_key}
+            file_dict = {"password" : file_password, "key" : file_key}
             password_storage[user_input_filename] = file_dict
-            temp_str = user_input_filename + ".txt"
-            file = (temp_str, "x")
+            file = (user_input_filename, "x")
+            save_dictionary_to_file(password_storage)
             print("File successfully created. ")
             continue
         elif temp_str == "N":
@@ -107,12 +126,23 @@ while (fail_state == True):
                 quit()
         elif password_storage[user_input_filename]["password"] == user_input_password:
             fail_state = False;
-
-#in editing mode
-clear()
-f = (user_input_filename, "r");
-for x in f:
-  print(x)
-user_input = input("\n\nWhat do you want to do today? w/d")
-user_input = user_input.upper();
-if (user_input == "W"):
+            clear()
+            f = (user_input_filename, "r");
+            file_key = password_storage[user_input_filename]["key"]
+            for x in f:
+                print(decrypt(x, file_key))
+            user_input = input("\n\nWhat do you want to do today? w/d")
+            user_input = user_input.upper();
+            if (user_input == "W"):
+              f = open(user_input_filename, "a")
+              while (True):
+                  value = input()
+                  f.write(value)
+                  f.write("\n")
+                  if (value == ""):
+                      break;
+              encrypt(str(f), file_key)
+              f.close()
+            if (user_input == "D"):
+              os.remove(user_input_filename)
+              encrypt(str(f), file_key)
