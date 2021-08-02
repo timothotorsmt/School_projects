@@ -190,11 +190,11 @@ def editDecision():
     editInstructions = tk.Label(text = "What would you like to do?")
     editWindow.title("Choose")
     writeBtn = tk.Button(
-        text = "Write"
+        text = "Write",
         command = enter("w")
         )
     appendBtn = tk.Button(
-        text = "Delete"
+        text = "Delete",
         command = enter("d")
         )
     user_input = userInput
