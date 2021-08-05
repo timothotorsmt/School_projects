@@ -8,7 +8,7 @@ import os
 
 def create_key():
     #this function creates a simple ceasar cipher key for the file. it generates 6 random digits to function as a key, which would aid in the cipher.
-    key = random.randint(0,9999999999)
+    key = random.randint(1000000000,9999999999)
     return str(key)
 
 def encrypt(string, key):
@@ -121,7 +121,7 @@ while (fail_state == True):
     user_input_filename = user_input_filename + ".txt"
     if user_input_filename not in password_storage:
         while True:
-            temp_str = input("File not found. Make new file? (y/n)")
+            temp_str = input("File not found. Make new file? (y/n): ")
             temp_str = temp_str.lower()
             if (temp_str == 'y' or temp_str == 'n'):
                 break
