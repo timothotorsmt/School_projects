@@ -8,7 +8,9 @@ import os
 
 def create_key():
     #this function creates a simple ceasar cipher key for the file. it generates 6 random digits to function as a key, which would aid in the cipher.
-    key = random.randint(1000000000,9999999999)
+    key = 26
+    while ((int(key) % 26 == 0)):
+        key = random.randint(1000000000,9999999999)
     return str(key)
 
 def encrypt(string, key):
@@ -100,16 +102,16 @@ def document():
 
     fileWindow.mainloop() #so the window doesn't close immediately
 
-
 def delete():
-    if user_input_filename in os.listdir():
+    #if the file is in the file directory, delete the file
+    if user_input_filename in os.listdir(): 
         os.remove(user_input_filename)
         password_storage.pop(user_input_filename)
         save_dictionary_to_file(password_storage) 
         tkinter.messagebox.showinfo('Removed!', 'Successfully Removed!')
+        quit()
     else:
         tkinter.messagebox.showerror('Error!', 'File not found!')
-
 
 #main
 #password_storage is the main storage dictionary
@@ -138,14 +140,14 @@ while (fail_state == True):
             continue
     else:
         user_input_password = input("Enter a password: ")
-        user_wrong_count = 0;
-        if password_storage[user_input_filename]["password"] != user_input_password:
+        while password_storage[user_input_filename]["password"] != user_input_password:
+            user_input_password = input("Wrong password. Please try again.\nEnter a password: ")
             user_wrong_count += 1;
             if user_wrong_count == 3:
                 quit()
-        elif password_storage[user_input_filename]["password"] == user_input_password:
-            fail_state = False;
-            file_key = password_storage[user_input_filename]["key"]
-            file_content = open(user_input_filename).read()
-            document()
-            save_dictionary_to_file(password_storage)
+        user_wrong_count = 0;
+        fail_state = False;
+        file_key = password_storage[user_input_filename]["key"]
+        file_content = open(user_input_filename).read()
+        document()
+        save_dictionary_to_file(password_storage)
