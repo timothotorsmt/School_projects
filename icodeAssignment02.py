@@ -34,7 +34,7 @@ def save_dictionary_to_file(dict):
     #this function saves the dictionary to a file 
     #rewrites the entire file
     f = open("dictionary_file.txt", "w")
-    f.write(str(dict))
+    f.write(encrypt(str(dict), 111))
     f.close
 
 def load_dictionary_from_file():
@@ -48,7 +48,7 @@ def load_dictionary_from_file():
         return eval(data)
     else:
         f = open('dictionary_file.txt','rt')
-        data = f.read()
+        data = decrypt(f.read(), 111)
         if (data == ""):
             f = open('dictionary_file.txt', 'w')
             f.write("{}")
